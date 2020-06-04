@@ -27,15 +27,15 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['@/plugins/element-ui'],
+  plugins: ['@/plugins/element-ui', '@/plugins/axios'],
   /*
    ** Nuxt.js dev-modules
    */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
-    '@nuxtjs/eslint-module',
+    // '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/stylelint-module
-    '@nuxtjs/stylelint-module'
+    // '@nuxtjs/stylelint-module'
   ],
   /*
    ** Nuxt.js modules
@@ -44,7 +44,9 @@ module.exports = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv'
+    // '@nuxtjs/dotenv',
+    // 跨域访问
+    ['@nuxtjs/proxy']
   ],
   /*
    ** Axios module configuration
@@ -60,5 +62,13 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, ctx) {}
+  },
+  proxy: {
+    '/api': {
+      target: 'http://127.0.0.1:7001',
+      pathRewrite: {
+        '^/api': '/'
+      }
+    }
   }
-}
+};
