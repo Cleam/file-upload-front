@@ -11,23 +11,12 @@
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="form.email" autocomplete="off" placeholder="请输入邮箱"></el-input>
       </el-form-item>
-      <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="form.nickname" autocomplete="off" placeholder="请输入昵称"></el-input>
-      </el-form-item>
       <el-form-item label="密码" prop="pass">
         <el-input
           v-model="form.pass"
           type="password"
           autocomplete="off"
           placeholder="请输入密码"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="确认密码" prop="checkPass">
-        <el-input
-          v-model="form.checkPass"
-          type="password"
-          autocomplete="off"
-          placeholder="请输入确认密码"
         ></el-input>
       </el-form-item>
       <el-form-item label="验证码" prop="captcha">
@@ -37,14 +26,14 @@
         </span>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('loginForm')">注册</el-button>
-        <el-button @click="resetForm('loginForm')">重置</el-button>
+        <el-button type="primary" @click="submitForm()">登录</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+import md5 from 'md5';
 export default {
   layout: 'blank',
   data() {
@@ -52,38 +41,58 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'));
       } else {
-        if (this.ruleForm.checkPass !== '') {
-          this.$refs.ruleForm.validateField('checkPass');
-        }
-        callback();
-      }
-    };
-    const validatePass2 = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请再次输入密码'));
-      } else if (value !== this.ruleForm.pass) {
-        callback(new Error('两次输入密码不一致!'));
-      } else {
         callback();
       }
     };
     return {
       form: {
         email: 'lizhigao@021.com',
-        nickname: 'lee',
         pass: 'a123456',
-        checkPass: 'a123456',
         captcha: ''
       },
       rules: {
         email: [{ type: 'email', required: true, message: '请输入正确邮箱' }],
         nickname: [{ required: true, message: '请输入昵称' }],
         pass: [{ validator: validatePass, required: true, trigger: 'blur' }],
-        checkPass: [{ validator: validatePass2, required: true, trigger: 'blur' }],
         captcha: [{ required: true, message: '请输入验证码' }]
       },
-      captcha: 'http://127.0.0.1:7001/captcha'
+      captcha: '/api/captcha'
     };
+  },
+  methods: {
+    submitForm() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          const { email, nickname, pass, captcha } = this.form;
+          this.$http
+            .post('/user/login', {
+              email,
+              nickname,
+              pass: md5(pass),
+              captcha
+            })
+            .then(res => {
+              if (res.code === 0) {
+                this.$message.success('登录成功');
+                setTimeout(() => {
+                  this.$router.push('/');
+                }, 500);
+              } else {
+                this.$message.error(res.message);
+              }
+            });
+        } else {
+          console.log('校验失败');
+        }
+      });
+    },
+    randomCaptcha() {
+      this.captcha = this.captcha.split('?')[0] + '?_t=' + Date.now();
+      // +
+      // Number(String(Math.random()).slice(2))
+      //   .toString(36)
+      //   .slice(-4);
+    }
   }
 };
 </script>

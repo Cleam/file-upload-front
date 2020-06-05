@@ -38,7 +38,6 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm">注册</el-button>
-        <el-button @click="resetForm">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -115,7 +114,6 @@ export default {
         }
       });
     },
-    resetForm() {},
     randomCaptcha() {
       this.captcha = this.captcha.split('?')[0] + '?_t=' + Date.now();
       // +
