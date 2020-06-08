@@ -19,11 +19,21 @@
           placeholder="请输入密码"
         ></el-input>
       </el-form-item>
-      <el-form-item label="验证码" prop="captcha">
+      <el-form-item label="验证码" prop="captcha" class="captcha-container">
         <el-input v-model="form.captcha" autocomplete="off" placeholder="请输入验证码"></el-input>
         <span class="captcha-wrap">
           <img :src="captcha" alt="" />
         </span>
+      </el-form-item>
+      <el-form-item label="邮箱验证码" prop="emailcode" class="emailcode-container">
+        <el-input
+          v-model="form.emailcode"
+          autocomplete="off"
+          placeholder="请输入邮箱验证码"
+        ></el-input>
+        <el-button type="primary" :disabled="send.timer > 0" @click="sendEmailCode">
+          {{ sendText }}
+        </el-button>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm()">登录</el-button>
@@ -45,6 +55,9 @@ export default {
       }
     };
     return {
+      send: {
+        timer: 0
+      },
       form: {
         email: 'lizhigao@021.com',
         pass: 'a123456',
@@ -59,7 +72,24 @@ export default {
       captcha: '/api/captcha'
     };
   },
+  computed: {
+    sendText() {
+      if (this.send.timer <= 0) {
+        return `发送`;
+      }
+      return `${this.send.timer}s后可发送`;
+    }
+  },
   methods: {
+    sendEmailCode() {
+      this.send.timer = 10;
+      const timer = setInterval(() => {
+        this.send.timer--;
+        if (this.send.timer <= 0) {
+          clearInterval(timer);
+        }
+      }, 1000);
+    },
     submitForm() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {

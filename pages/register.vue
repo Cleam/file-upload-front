@@ -1,12 +1,12 @@
 <template>
-  <div class="login-container">
+  <div class="register-container">
     <el-form
       ref="registerForm"
       :model="form"
       :rules="rules"
       status-icon
       label-width="100px"
-      class="login-form"
+      class="register-form"
     >
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="form.email" autocomplete="off" placeholder="请输入邮箱"></el-input>
@@ -30,7 +30,7 @@
           placeholder="请输入确认密码"
         ></el-input>
       </el-form-item>
-      <el-form-item label="验证码" prop="captcha">
+      <el-form-item label="验证码" prop="captcha" class="captcha-container">
         <el-input v-model="form.captcha" autocomplete="off" placeholder="请输入验证码"></el-input>
         <span class="captcha-wrap">
           <img :src="captcha" alt="" @click="randomCaptcha" />
