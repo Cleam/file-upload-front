@@ -25,7 +25,7 @@
           <img :src="captcha" alt="" />
         </span>
       </el-form-item>
-      <el-form-item label="邮箱验证码" prop="emailcode" class="emailcode-container">
+      <el-form-item label="邮箱验证码" prop="emailcode" class="captcha-container">
         <el-input
           v-model="form.emailcode"
           autocomplete="off"
@@ -61,13 +61,15 @@ export default {
       form: {
         email: 'lizhigao@021.com',
         pass: 'a123456',
-        captcha: ''
+        captcha: '',
+        emailcode: ''
       },
       rules: {
         email: [{ type: 'email', required: true, message: '请输入正确邮箱' }],
         nickname: [{ required: true, message: '请输入昵称' }],
         pass: [{ validator: validatePass, required: true, trigger: 'blur' }],
-        captcha: [{ required: true, message: '请输入验证码' }]
+        captcha: [{ required: true, message: '请输入验证码' }],
+        emailcode: [{ required: true, message: '请输入邮箱验证码' }]
       },
       captcha: '/api/captcha'
     };
@@ -77,11 +79,12 @@ export default {
       if (this.send.timer <= 0) {
         return `发送`;
       }
-      return `${this.send.timer}s后可发送`;
+      return `${this.send.timer}s后发送`;
     }
   },
   methods: {
     sendEmailCode() {
+      this.$http.get('/emailCode?email=' + this.form.email);
       this.send.timer = 10;
       const timer = setInterval(() => {
         this.send.timer--;
@@ -93,19 +96,22 @@ export default {
     submitForm() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          const { email, nickname, pass, captcha } = this.form;
+          const { email, nickname, pass, captcha, emailcode } = this.form;
           this.$http
             .post('/user/login', {
               email,
               nickname,
               pass: md5(pass),
-              captcha
+              captcha,
+              emailcode
             })
             .then(res => {
               if (res.code === 0) {
+                localStorage.setItem('token', res.data.token);
                 this.$message.success('登录成功');
                 setTimeout(() => {
-                  this.$router.push('/');
+                  // this.$router.push('/');
+                  this.$router.push('/uc');
                 }, 500);
               } else {
                 this.$message.error(res.message);
@@ -128,6 +134,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.captcha-wrap {
+.captcha-container {
+  .el-input {
+    width: 180px;
+  }
+  .captcha-wrap {
+    position: absolute;
+    right: 0;
+    width: 120px;
+    height: 40px;
+    > img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .el-button {
+    position: absolute;
+    right: 0;
+    width: 110px;
+    height: 40px;
+  }
 }
 </style>

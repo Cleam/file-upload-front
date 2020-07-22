@@ -15,11 +15,4 @@ export default {};
   margin: 0 auto;
   margin-top: 10%;
 }
-.captcha-container,
-.emailcode-container {
-  position: relative;
-}
-.captcha-wrap {
-  position: absolute;
-}
 </style>
