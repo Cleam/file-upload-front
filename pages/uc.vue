@@ -58,12 +58,6 @@ export default {
       const fileList = e.dataTransfer.files;
       this.file = fileList[0];
     });
-    // let timer = setInterval(() => {
-    //   if (this.progress > 100) {
-    //     clearInterval(timer);
-    //   }
-    //   this.progress++;
-    // }, 500);
   },
   methods: {
     handleUpload(e) {
